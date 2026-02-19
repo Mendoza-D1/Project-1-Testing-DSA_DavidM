@@ -8,36 +8,44 @@
 #include <vector>
 #include <string>
 
-struct Node {
-    std::string name;
-    std::string ufid;
-    Node* left;
-    Node* right;
-    int height;
-
-    Node(std::string name, std::string ufid) {
-        this->name = name;
-        this->ufid = ufid;
-        this->left = nullptr;
-        this->right = nullptr;
-        this->height = 0;
-    }
-};
-
 class AVLTree {
 private:
+    struct Node {
+        std::string name;
+        std::string ufid;
+        Node* left;
+        Node* right;
+        int height;
+
+        Node(std::string name, std::string ufid) {
+            this->name = name;
+            this->ufid = ufid;
+            this->left = nullptr;
+            this->right = nullptr;
+            this->height = 1;
+        }
+    };
+    Node* rightRotation(Node* root);
+    Node* leftRotation(Node* root);
+    Node* rlRotation(Node* root);
+    Node* lrRotation(Node* root);
     Node* root = nullptr;
-    Node* insertHelper(Node* node, std::string name, std::string ufid);
+    Node* insertHelper(Node* node, std::string& name, std::string ufid);
+    void preorderHelper(Node* curr, std::vector<std::pair<std::string, std::string>>& Hvec);
+    void inorderHelper(Node* curr, std::vector<std::pair<std::string, std::string>>& Hvec);
+    void postorderHelper(Node* curr, std::vector<std::pair<std::string, std::string>>& Hvec);
+    int levelcountHelper(Node* root);
 public:
     std::string insert(std::string name, std::string ufid);
     std::string remove(std::string name);
     std::string searchID(std::string ufid);
     std::string searchN(std::string name);
-    std::vector<Node*> printInOrder();
-    std::vector<Node*> printPreOrder();
-    std::vector<Node*> printPostOrder();
+    std::vector<std::pair<std::string, std::string>> printInOrder();
+    std::vector<std::pair<std::string, std::string>> printPreOrder();
+    std::vector<std::pair<std::string, std::string>> printPostOrder();
     int printLevelCount();
     std::string removeInorder(int N);
+    bool isValid(std::string& name, std::string& ufid);
 
 
 };
