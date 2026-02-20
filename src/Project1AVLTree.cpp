@@ -6,28 +6,7 @@ std::string AVLTree::insert(std::string name, std::string ufid) {
     if (!isValid(name, ufid)) {
         return "unsuccessful";
     }
-
     root = insertHelper(root, name, ufid);
-    int balance = (root->left ? root->left->height : 0) - (root->right ? root->right->height : 0);
-    if (balance >= 2) {
-        int leftBal = (root->left->left ? root->left->left->height:0) - (root->left->right ? root->left->right->height:0);
-        if (leftBal == 1){ //leftHeavy
-            root= rightRotation(root);
-        }
-        else {
-            root= lrRotation(root);
-        }
-    }
-    else if (balance <= -2) { //rightHeavy
-        int rightBal = (root->right->left ? root->right->left->height:0) - (root->right->right ? root->right->right->height:0);
-        if (rightBal == -1) {
-            root = leftRotation(root);
-        }
-        else {
-            root = rlRotation(root);
-        }
-    }
-
     return "successful";
 }
 AVLTree::Node* AVLTree::leftRotation(Node *root) {
@@ -35,6 +14,8 @@ AVLTree::Node* AVLTree::leftRotation(Node *root) {
     Node* twoT = root->right;
     twoT->left = root;
     root->right = oneT;
+    root->height -= 2;
+    twoT->height +=1;
     return twoT;
 }
 
@@ -43,6 +24,8 @@ AVLTree::Node* AVLTree::rightRotation(Node *root) {
     Node* twoT = root->left;
     twoT->right = root;
     root->left = oneT;
+    root->height -= 2;
+    twoT->height +=1;
     return twoT;
 }
 
@@ -68,6 +51,28 @@ AVLTree::Node* AVLTree::insertHelper(Node* node, std::string& name, std::string 
     }
 
     node->height = 1 + std::max(node->left ? node->left->height:0, node->right ? node->right->height : 0);
+
+    int balance = (node->left ? node->left->height : 0) - (node->right ? node->right->height : 0);
+    if (balance >= 2) {
+        int leftBal = (node->left->left ? node->left->left->height:0) - (node->left->right ? node->left->right->height:0);
+        if (leftBal == 1){ //leftHeavy
+            node= rightRotation(node);
+
+        }
+        else {
+            node= lrRotation(node);
+        }
+    }
+    else if (balance <= -2) { //rightHeavy
+        int rightBal = (node->right->left ? node->right->left->height:0) - (node->right->right ? node->right->right->height:0);
+        if (rightBal == -1) {
+            node = leftRotation(node);
+        }
+        else {
+            node = rlRotation(node);
+        }
+    }
+
     return node;
 }
 
@@ -114,15 +119,105 @@ std::vector<std::pair<std::string, std::string>> AVLTree::printPostOrder() {
     return returnVec;
 }
 
-std::string AVLTree::remove(std::string name){
-    return "";
+AVLTree::Node* AVLTree::removeHelper(Node* curr, std::string& ufid){
+    if (curr == nullptr) {
+        return curr;
+    }
+    int Ids = std::stoi(ufid);
+    if (Ids < stoi(curr->ufid)){
+        curr->left = removeHelper(curr->left, ufid);
+    }
+    else if (Ids > stoi(curr->ufid)) {
+        curr->right = removeHelper(curr->right, ufid);
+    }
+    else {
+        if (curr->left == nullptr && curr->right == nullptr) {
+            delete curr;
+            return nullptr;
+        }
+        if ((curr->right == nullptr) != (curr->left == nullptr)) {
+            if (curr->left) {
+                Node* PH = curr->left;
+                delete curr;
+                return PH;
+            }
+            else {
+                Node* PH = curr->right;
+                delete curr;
+                return PH;
+            }
+        }
+        if (curr->left && curr->right) {
+            Node* successor = curr->right;
+            while(successor->left){
+                successor = successor->left;
+            }
+            curr->name = successor->name; //swap values inside of curr into the inorder successor
+            curr->ufid = successor->ufid;
+            curr->right = removeHelper(curr->right, curr->ufid);
+
+        }
+
+    }
+
+    return curr;
 }
-std::string searchID(std::string ufid) {
-return "";
+
+std::string AVLTree::remove(std::string ufid){
+    if (searchidHelper(root, ufid) == "Unsucessful") {
+        return "Unsucessful";
+    };
+    Node* newCurr = removeHelper(root, ufid);
+    if (searchidHelper(newCurr, ufid) == "Unsucessful") {
+        return "Successful";
+    }
+    return "Unsucessful";
 }
+
+std::string AVLTree::searchidHelper(Node* node, std::string& ufid) {
+    if (node == nullptr) {
+        return "Unsuccessful";
+    }
+    if (node->ufid == ufid) {
+        return node->name;
+    }
+    if (stoi(ufid) < stoi(node->ufid)) {
+        ufid = searchidHelper(node->left, ufid);
+    } else if (stoi(ufid) > stoi(node->ufid)) {
+        ufid = searchidHelper(node->right, ufid);
+    }
+}
+std::string AVLTree::searchID(std::string ufid) {
+    std::string res = searchidHelper(root, ufid);
+    return res;
+}
+
+void AVLTree::searchnameHelper(Node* node, std::string& name, std::vector<std::string>& Hvec) {
+    if (node == nullptr) {
+        return;
+    }
+    if (node->name == name) {
+        Hvec.push_back(node->ufid);
+    }
+    searchnameHelper(node->left, name, Hvec);
+    searchnameHelper(node->right, name, Hvec);
+}
+
+std::vector<std::string> AVLTree::searchN(std::string name) {
+    std::vector<std::string> ufids;
+    searchnameHelper(root, name, ufids);
+    if (ufids.empty()) {
+        std::cout << "Unsuccessful";
+    }
+    return ufids;
+}
+
 
 int AVLTree::levelcountHelper(Node *root) {
     return root->height;
+    if (root==nullptr) {
+     return 0;
+    }
 }
 
 int AVLTree::printLevelCount(){
@@ -130,7 +225,10 @@ int AVLTree::printLevelCount(){
 }
 
 std::string AVLTree::removeInorder(int N){
-    return "";
+    std::vector<std::pair<std::string, std::string>> Hvec = printInOrder();
+    std::string eliminate = Hvec[N].second;
+    std::string res = eliminate;
+    return res;
 }
 
 bool AVLTree::isValid(std::string& name, std::string& ufid){

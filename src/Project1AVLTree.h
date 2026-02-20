@@ -35,11 +35,14 @@ private:
     void inorderHelper(Node* curr, std::vector<std::pair<std::string, std::string>>& Hvec);
     void postorderHelper(Node* curr, std::vector<std::pair<std::string, std::string>>& Hvec);
     int levelcountHelper(Node* root);
+    std::string searchidHelper(Node* node, std::string& ufid);
+    void searchnameHelper(Node* node, std::string& name, std::vector<std::string>& Hvec);
+    Node* removeHelper(Node* curr, std::string& ufid);
 public:
     std::string insert(std::string name, std::string ufid);
-    std::string remove(std::string name);
+    std::string remove(std::string ufid);
     std::string searchID(std::string ufid);
-    std::string searchN(std::string name);
+    std::vector<std::string>  searchN(std::string name);
     std::vector<std::pair<std::string, std::string>> printInOrder();
     std::vector<std::pair<std::string, std::string>> printPreOrder();
     std::vector<std::pair<std::string, std::string>> printPostOrder();

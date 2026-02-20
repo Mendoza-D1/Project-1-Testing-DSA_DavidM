@@ -21,7 +21,7 @@ TEST_CASE("Left rotation") {
 	REQUIRE(t.insert("C", "00000030") == "successful");
 
 	std::vector<std::pair<std::string, std::string>> res = t.printPostOrder();
-	// std::cout << t.printLevelCount();
+	std::cout << t.printLevelCount();
 	// REQUIRE(res[0].second == "00000010");
 	// REQUIRE(res[1].second == "00000020");
 	// REQUIRE(res[2].second == "00000030");
