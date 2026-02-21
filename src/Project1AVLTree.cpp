@@ -2,7 +2,7 @@
 // Created by David on 2/13/2026.
 //
 #include "Project1AVLTree.h"
-std::string AVLTree::insert(std::string name, std::string ufid) {
+std::string AVLTree::insert(std::string& name, std::string& ufid) {
     if (!isValid(name, ufid)) {
         return "unsuccessful";
     }
@@ -39,7 +39,7 @@ AVLTree::Node* AVLTree::rlRotation(Node* root) {
     return leftRotation(root);
 }
 
-AVLTree::Node* AVLTree::insertHelper(Node* node, std::string& name, std::string ufid) {
+AVLTree::Node* AVLTree::insertHelper(Node* node, std::string& name, std::string& ufid) {
     if (node == nullptr) {
         return new Node(name, ufid);
     }
@@ -123,7 +123,7 @@ AVLTree::Node* AVLTree::removeHelper(Node* curr, std::string& ufid){
     if (curr == nullptr) {
         return curr;
     }
-    int Ids = std::stoi(ufid);
+    int Ids = stoi(ufid);
     if (Ids < stoi(curr->ufid)){
         curr->left = removeHelper(curr->left, ufid);
     }
@@ -163,31 +163,32 @@ AVLTree::Node* AVLTree::removeHelper(Node* curr, std::string& ufid){
     return curr;
 }
 
-std::string AVLTree::remove(std::string ufid){
-    if (searchidHelper(root, ufid) == "Unsucessful") {
-        return "Unsucessful";
+std::string AVLTree::remove(std::string& ufid){
+    if (searchidHelper(root, ufid) == "unsuccessful") {
+        return "unsuccessful";
     };
     Node* newCurr = removeHelper(root, ufid);
-    if (searchidHelper(newCurr, ufid) == "Unsucessful") {
-        return "Successful";
+    if (searchidHelper(newCurr, ufid) == "unsuccessful") {
+        return "successful";
     }
-    return "Unsucessful";
+    return "unsuccessful";
 }
 
 std::string AVLTree::searchidHelper(Node* node, std::string& ufid) {
     if (node == nullptr) {
-        return "Unsuccessful";
+        return "unsuccessful";
     }
     if (node->ufid == ufid) {
         return node->name;
     }
     if (stoi(ufid) < stoi(node->ufid)) {
-        ufid = searchidHelper(node->left, ufid);
+        return searchidHelper(node->left, ufid);
     } else if (stoi(ufid) > stoi(node->ufid)) {
-        ufid = searchidHelper(node->right, ufid);
+        return searchidHelper(node->right, ufid);
     }
+    return "successful";
 }
-std::string AVLTree::searchID(std::string ufid) {
+std::string AVLTree::searchID(std::string& ufid) {
     std::string res = searchidHelper(root, ufid);
     return res;
 }
@@ -203,21 +204,21 @@ void AVLTree::searchnameHelper(Node* node, std::string& name, std::vector<std::s
     searchnameHelper(node->right, name, Hvec);
 }
 
-std::vector<std::string> AVLTree::searchN(std::string name) {
+std::vector<std::string> AVLTree::searchN(std::string& name) {
     std::vector<std::string> ufids;
     searchnameHelper(root, name, ufids);
     if (ufids.empty()) {
-        std::cout << "Unsuccessful";
+        std::cout << "unsuccessful" << std::endl;
     }
     return ufids;
 }
 
 
-int AVLTree::levelcountHelper(Node *root) {
-    return root->height;
-    if (root==nullptr) {
-     return 0;
-    }
+int AVLTree::levelcountHelper(Node* node) {
+    if (node == nullptr) return 0;
+    int leftLevels = levelcountHelper(node->left);
+    int rightLevels = levelcountHelper(node->right);
+    return 1 + std::max(leftLevels, rightLevels);
 }
 
 int AVLTree::printLevelCount(){
@@ -227,8 +228,7 @@ int AVLTree::printLevelCount(){
 std::string AVLTree::removeInorder(int N){
     std::vector<std::pair<std::string, std::string>> Hvec = printInOrder();
     std::string eliminate = Hvec[N].second;
-    std::string res = eliminate;
-    return res;
+    return remove(eliminate);
 }
 
 bool AVLTree::isValid(std::string& name, std::string& ufid){
@@ -259,6 +259,21 @@ bool AVLTree::isValid(std::string& name, std::string& ufid){
     }
     return true;
 }
+
+void AVLTree::deleteTree(Node* node) {
+    if (node == nullptr) {
+        return;
+    }
+    deleteTree(node->left);
+    deleteTree(node->right);
+    delete node;
+}
+
+AVLTree::~AVLTree() {
+    deleteTree(root);
+}
+
+
 
 
 

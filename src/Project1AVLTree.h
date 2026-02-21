@@ -30,7 +30,7 @@ private:
     Node* rlRotation(Node* root);
     Node* lrRotation(Node* root);
     Node* root = nullptr;
-    Node* insertHelper(Node* node, std::string& name, std::string ufid);
+    Node* insertHelper(Node* node, std::string& name, std::string& ufid);
     void preorderHelper(Node* curr, std::vector<std::pair<std::string, std::string>>& Hvec);
     void inorderHelper(Node* curr, std::vector<std::pair<std::string, std::string>>& Hvec);
     void postorderHelper(Node* curr, std::vector<std::pair<std::string, std::string>>& Hvec);
@@ -39,16 +39,20 @@ private:
     void searchnameHelper(Node* node, std::string& name, std::vector<std::string>& Hvec);
     Node* removeHelper(Node* curr, std::string& ufid);
 public:
-    std::string insert(std::string name, std::string ufid);
-    std::string remove(std::string ufid);
-    std::string searchID(std::string ufid);
-    std::vector<std::string>  searchN(std::string name);
+    std::string insert(std::string& name, std::string& ufid);
+    std::string remove(std::string& ufid);
+    std::string searchID(std::string& ufid);
+    std::vector<std::string>  searchN(std::string& name);
     std::vector<std::pair<std::string, std::string>> printInOrder();
     std::vector<std::pair<std::string, std::string>> printPreOrder();
     std::vector<std::pair<std::string, std::string>> printPostOrder();
     int printLevelCount();
     std::string removeInorder(int N);
     bool isValid(std::string& name, std::string& ufid);
+
+    void deleteTree(Node* node);
+
+    ~AVLTree();
 
 
 };
